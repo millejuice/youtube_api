@@ -29,8 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<YoutubeVideos> fetchYoutubeList() async {
     var part = 'snippet';
     var maxResults = 10; //자신이 가지고 오고 싶은 개수
-    var playlistId = 'Youtube url에 있는 재생목록 ID';
-    var key = '자신의 API 키';
+    var playlistId = 'amOSaNX7KJg';
+    var key = 'AIzaSyBHdbdKJmDcfDuF_XcbHLXbpwzueO9ISB8';
 
     var url = 'https://www.googleapis.com/youtube/v3/playlistItems?'
         'playlistId=$playlistId&part=$part&maxResults=$maxResults&key=$key';
@@ -52,6 +52,22 @@ class _HomeScreenState extends State<HomeScreen> {
               future: youtubeList,
               builder: (BuildContext context, AsyncSnapshot snapshot){ 
               // 이 곳 부분에 데이터를 받아오기 전까지 보여줄 Loading창을 구현하면 좋다.
+              if(snapshot.hasData == false)
+              {
+                return const Center(child: CircularProgressIndicator());
+              }
+              else if(snapshot.hasError)
+              {
+                return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      
+                      child: Text(
+                        'Error: ${snapshot.error}', // 에러명을 텍스트에 뿌려줌
+                        style: const TextStyle(fontSize: 15),
+                      ),
+                    );
+              }
+              else{
                         SizedBox(
                           height: 145,
                           child: ListView.builder(
@@ -73,12 +89,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                       var list = items[index].snippet.playlistId;
                                       var link =
                                           "https://www.youtube.com/watch?v=$vodId&list=$list";
-                                      launch(link, forceSafariVC: false);
+                                    //  launch(link, forceSafariVC: false);
                                     },
                                     child: Column(
                                       children: <Widget>[
                                         //썸네일부분 구현 필요
-                                    
+                                          Image.network(url),
                                         Text(
                                           items[index].snippet.title, // 제목 부분
                                           maxLines: 2,
@@ -97,6 +113,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             },
                           ),
                         );
+                       }
+                      return const Center(
+                        child: Text('Nothing'),
+                      );
                       },
                     ),
                   );
