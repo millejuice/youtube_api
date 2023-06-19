@@ -25,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
     var part = 'snippet';
     var maxResults = 10; //자신이 가지고 오고 싶은 개수
     var playlistId = 'v=amOSaNX7KJg';
-    var key = '당신의 youtube key';
+    var key = 'AIzaSyBHdbdKJmDcfDuF_XcbHLXbpwzueO9ISB8';
       String url = 'https://www.googleapis.com/youtube/v3/videos?'
   'id=$playlistId&part=$part&maxResults=$maxResults&key=$key';
     var response = await http.get(Uri.parse(url));
