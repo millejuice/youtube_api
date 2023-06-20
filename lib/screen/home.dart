@@ -10,12 +10,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Snippet> videos = [];
+  //List<Snippet> videos = [];
   late Future<YoutubeVideos> youtubeList;
   late YoutubeVideos youtube;
 
   @override
-  void initState(){             //initState는 처음만 실행되서 futurebuilder만들기 전에 실행 안될수도 있어서 바굼
+  void initState(){             
     super.initState();
     youtubeList = fetchYoutubeList();
     print('init success');
@@ -23,9 +23,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<YoutubeVideos> fetchYoutubeList() async {            //YoutubeVideos가져오고 youtube에 저장
     var part = 'snippet';
-    var maxResults = 10; //자신이 가지고 오고 싶은 개수
-    var playlistId = 'v=amOSaNX7KJg';
-    var key = '당신의 youtube key';
+    var maxResults = 1;                            
+    var playlistId = 'amOSaNX7KJg';
+    var key = 'youtube_api_key';
       String url = 'https://www.googleapis.com/youtube/v3/videos?'
   'id=$playlistId&part=$part&maxResults=$maxResults&key=$key';
     var response = await http.get(Uri.parse(url));
@@ -33,8 +33,9 @@ class _HomeScreenState extends State<HomeScreen> {
       print(response.body);
       var decodedData = jsonDecode(response.body);
       print('fetch2');
-      youtube = YoutubeVideos.fromJson(decodedData);     //youtube에 YoutubeVideos객체 저장
-      var videoList = decodedData['items'] as List<dynamic>;    //items키 이용해서  videoList에 비디오 목록 저장
+      youtube = YoutubeVideos.fromJson(decodedData);             //youtube에 YoutubeVideos객체 저장
+      var videoList = decodedData['items'] as List<dynamic>;     //items키 이용해서  videoList에 비디오 목록 저장
+      setState(() {});
       return youtube;
     } else {
       print('값 없음45');
@@ -45,12 +46,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-            body: FutureBuilder(
-              future: youtubeList,
+            body: FutureBuilder<YoutubeVideos>(
+              future: fetchYoutubeList(),
               builder: (BuildContext context, AsyncSnapshot snapshot){ 
               if(snapshot.hasData == false)
               {
-                // print(snapshot.data);
                 print('값 없음50');
                 return const Center(child: CircularProgressIndicator());
               }
@@ -60,19 +60,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.all(8.0),
                       
                       child: Text(
-                        'Error: ${snapshot.error}', // 에러명을 텍스트에 뿌려줌
+                        'Error: ${snapshot.error}', 
                         style: const TextStyle(fontSize: 15),
                       ),
                     );
               }
               else{
-                SizedBox(
+                youtube = snapshot.data!;
+                var items = youtube.items;
+                return SizedBox(
                   height: MediaQuery.of(context).size.height,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: snapshot.data!.items.length,
                     itemBuilder: (context, index) {
-                      print('zz');
                       var items = snapshot.data!.items;
                       String thumb = '';
                       var thumbnails = items[index].snippet.thumbnails;
@@ -84,14 +85,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             onTap: () {
                               var vodId = items[index].snippet.resourceId.videoId;
                               var list = items[index].snippet.playlistId;
-                              var link =
-                                  "https://www.youtube.com/watch?v=$vodId&list=$list";
-                            //  launch(link, forceSafariVC: false);
+
                             },
                             child: Column(
                               children: <Widget>[
-                                //썸네일부분 구현 필요
-                                  Image.network(thumbnails.defaultThumbnail.url,),
+                                  Image.network(items[index].snippet.thumbnails.high),
                                 Text(
                                   items[index].snippet.title, // 제목 부분
                                   maxLines: 2,
@@ -111,9 +109,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               }           
-            return const Center(
-              child: Text('Nothing'),
-            );
           },
         ),
       );
