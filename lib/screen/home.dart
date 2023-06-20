@@ -15,7 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late YoutubeVideos youtube;
 
   @override
-  void initState(){             //initState는 처음만 실행되서 futurebuilder만들기 전에 실행 안될수도 있어서 바굼
+  void initState(){             
     super.initState();
     youtubeList = fetchYoutubeList();
     print('init success');
@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<YoutubeVideos> fetchYoutubeList() async {            //YoutubeVideos가져오고 youtube에 저장
     var part = 'snippet';
     var maxResults = 10; //자신이 가지고 오고 싶은 개수
-    var playlistId = 'v=amOSaNX7KJg';
+    var playlistId = 'amOSaNX7KJg';
     var key = 'AIzaSyBHdbdKJmDcfDuF_XcbHLXbpwzueO9ISB8';
       String url = 'https://www.googleapis.com/youtube/v3/videos?'
   'id=$playlistId&part=$part&maxResults=$maxResults&key=$key';
